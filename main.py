@@ -1,32 +1,54 @@
 import os
 from glob import glob
+import argparse
 
 import webvtt
 import ffmpeg
 
-SRC_PATH = './src/'
-DST_PATH = './dst/'
+SUPPORT_VOICE_FORMAT = ['.wav']
+SUPPORT_SUBTITLE_FORMAT = ['.vtt']
 
 
-def audio_cutter():
-    for file in glob('./src/*.vtt'):
-        filename = os.path.basename(file).replace('.vtt', '')
-        vtt_file = SRC_PATH + filename + '.vtt'
-        wav_file = SRC_PATH + filename + '.wav'
+def audio_cutter(args):
+    for file in glob(os.path.join(args.input, '*' + args.subtitle_format)):
+        filename = os.path.basename(file).replace(args.subtitle_format, '')
+        vtt_file = os.path.join(args.input, filename + args.subtitle_format)
+        wav_file = os.path.join(args.input, filename + args.voice_format)
 
-        for i, caption in enumerate(webvtt.read(vtt_file)):
-            print(caption.raw_text)
-            print(caption.start_in_seconds)
-            print(caption.end_in_seconds)
-            print(caption.raw_text)
+        for i, subtitle in enumerate(webvtt.read(vtt_file)):
+            print(subtitle.raw_text)
+            print(subtitle.start_in_seconds)
+            print(subtitle.end_in_seconds)
+            print(subtitle.raw_text)
 
             (
                 ffmpeg
                     .input(wav_file)
-                    .filter('atrim', start=caption.start_in_seconds, end=caption.end_in_seconds)
-                    .output(DST_PATH + filename + ".%04d" % i + '.wav')
+                    .filter('atrim', start=subtitle.start_in_seconds, end=subtitle.end_in_seconds)
+                    .output(os.path.join(args.output, filename + ".%04d" % i + args.voice_format))
                     .run()
             )
 
 
-audio_cutter()
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='Cut the voice file corresponding to the subtitles into sections.')
+    parser.add_argument('--input', help='Path where the input voice and subtitle files', default='./src')
+    parser.add_argument('--output', help='Path where the output file will be generated', default='./dst')
+    parser.add_argument('--voice_format', default='.wav')
+    parser.add_argument('--subtitle_format', default='.vtt')
+
+    args = parser.parse_args()
+
+    if args.voice_format not in SUPPORT_VOICE_FORMAT:
+        raise TypeError('%s is not support' % args.voice_format)
+
+    if args.subtitle_format not in SUPPORT_SUBTITLE_FORMAT:
+        raise TypeError('%s is not support' % args.subtitle_format)
+
+    try:
+        if not os.path.exists(args.output):
+            os.makedirs(args.output)
+    except OSError:
+        print('Error: Creating directory. ' + args.output)
+
+    audio_cutter(args)
