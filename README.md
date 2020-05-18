@@ -1,6 +1,11 @@
 # audio-cutter-subtitles
 Cut the voice file corresponding to the subtitles into sections.
 
+## usage
+```sh
+python main.py
+```
+
 ## input
 - input.wav
 
