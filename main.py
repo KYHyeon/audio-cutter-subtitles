@@ -32,8 +32,8 @@ def audio_cutter(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Cut the voice file corresponding to the subtitles into sections.')
-    parser.add_argument('--input', help='Path where the input voice and subtitle files', default='./src')
-    parser.add_argument('--output', help='Path where the output file will be generated', default='./dst')
+    parser.add_argument('-i', '--input', help='Path where the input voice and subtitle files', default='./src')
+    parser.add_argument('-o', '--output', help='Path where the output file will be generated', default='./dst')
     parser.add_argument('--voice_format', default='.wav')
     parser.add_argument('--subtitle_format', default='.vtt')
 
