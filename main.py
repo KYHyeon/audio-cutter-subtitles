@@ -40,10 +40,10 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.voice_format not in SUPPORT_VOICE_FORMAT:
-        raise TypeError('%s is not support' % args.voice_format)
+        raise TypeError('Error: %s is not support' % args.voice_format)
 
     if args.subtitle_format not in SUPPORT_SUBTITLE_FORMAT:
-        raise TypeError('%s is not support' % args.subtitle_format)
+        raise TypeError('Error: %s is not support' % args.subtitle_format)
 
     try:
         if not os.path.exists(args.output):
